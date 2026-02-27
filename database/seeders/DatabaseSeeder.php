@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
             $courses = Course::factory(2)->create(['level_id' => $level->id]);
 
             $courses->each(function ($course) {
-                Lesson::factory(rand( 5, 10))->create(['course_id' => $course->id]);
+                Lesson::factory(rand(5, 10))->create(['course_id' => $course->id]);
             });
         });
 

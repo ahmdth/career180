@@ -42,6 +42,18 @@ class CourseCompletedMail extends Mailable implements ShouldQueue
                 'course' => $this->course,
             ],
         );
+        // Generate certificate URL for download
+        $certificateFilename = 'certificate-'.$this->user->id.'-'.$this->course->id.'.pdf';
+        $certificateUrl = url('storage/certificates/'.$certificateFilename);
+
+        return new Content(
+            markdown: 'emails.course-completed',
+            with: [
+                'user' => $this->user,
+                'course' => $this->course,
+                'certificateUrl' => $certificateUrl,
+            ],
+        );
     }
 
     /**
@@ -51,6 +63,34 @@ class CourseCompletedMail extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [];
+        // Ensure certificates directory exists
+        $certDir = storage_path('app/certificates');
+        if (! is_dir($certDir)) {
+            mkdir($certDir, 0775, true);
+        }
+
+        // Generate certificate PDF using Browsershot
+        $certDir = storage_path('app/public/certificates');
+        if (! is_dir($certDir)) {
+            mkdir($certDir, 0775, true);
+        }
+
+        // Generate certificate PDF using Browsershot
+        $pdfPath = $certDir.'/certificate-'.$this->user->id.'-'.$this->course->id.'.pdf';
+        \Spatie\Browsershot\Browsershot::html(
+            view('certificates.modern', [
+                'name' => $this->user->name,
+                'course' => $this->course->title,
+                'date' => now()->format('F j, Y'),
+            ])->render()
+        )
+            ->format('A4')
+            ->save($pdfPath);
+
+        return [
+            \Illuminate\Mail\Mailables\Attachment::fromPath($pdfPath)
+                ->as('Certificate.pdf')
+                ->withMime('application/pdf'),
+        ];
     }
 }

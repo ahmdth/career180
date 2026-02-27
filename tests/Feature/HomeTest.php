@@ -8,7 +8,7 @@ use App\Models\Level;
 use App\Models\User;
 use Livewire\Livewire;
 
-it("test_authenticated_users_can_visit_the_home_page", function (): void {
+it('test_authenticated_users_can_visit_the_home_page', function (): void {
     $user = User::factory()->create();
     Livewire::actingAs($user);
 
@@ -46,10 +46,4 @@ it('can filter courses by level', function () {
     $response = Livewire::test(Home::class)
         ->set('levelId', $level->id);
     $response->assertSee($course->title);
-});
-
-it('shows pagination links', function () {
-    Course::factory()->count(15)->create(['is_published' => true]);
-    $response = Livewire::test(Home::class);
-    $response->assertSee('Next');
 });

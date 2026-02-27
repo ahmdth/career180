@@ -28,7 +28,7 @@ class LessonShow extends Component
             }
             $enrolled = Enrollment::where([
                 'user_id' => Auth::id(),
-                'course_id' => $lesson->course_id
+                'course_id' => $lesson->course_id,
             ])->exists();
             if (! $enrolled) {
                 abort(
@@ -54,6 +54,7 @@ class LessonShow extends Component
             ->orderByDesc('order')
             ->first();
     }
+
     public function markAsCompleted()
     {
         if (! Auth::check()) {
@@ -93,6 +94,7 @@ class LessonShow extends Component
 
         session()->flash('message', 'Lesson marked as completed!');
     }
+
     public function isCompleted()
     {
         if (! Auth::check()) {

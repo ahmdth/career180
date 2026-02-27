@@ -11,6 +11,7 @@ class Course extends Model
     use HasFactory;
 
     protected $with = ['level'];
+
     protected $fillable = [
         'level_id',
         'title',

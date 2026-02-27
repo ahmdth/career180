@@ -12,6 +12,7 @@ use Livewire\Component;
 class VideoPlayer extends Component
 {
     public $lesson;
+
     public function mount($lesson)
     {
         $this->lesson = $lesson;
@@ -23,16 +24,18 @@ class VideoPlayer extends Component
             LessonProgress::updateOrCreate(
                 [
                     'user_id' => Auth::id(),
-                    'lesson_id' => $this->lesson->id
+                    'lesson_id' => $this->lesson->id,
                 ],
                 [
                     'watch_seconds' => $seconds,
-                    'started_at' => now()
+                    'started_at' => now(),
                 ]
             );
         }
+
         return $this->skipRender();
     }
+
     public function markAsCompleted()
     {
         if (! Auth::check()) {
@@ -72,6 +75,7 @@ class VideoPlayer extends Component
 
         session()->flash('message', 'Lesson marked as completed!');
     }
+
     public function goToNextLesson()
     {
         $next = $this->getNextLesson();
@@ -79,6 +83,7 @@ class VideoPlayer extends Component
             return redirect()->route('lessons.show', ['course' => $next->course, 'lesson' => $next]);
         }
     }
+
     public function getNextLesson()
     {
         return $this->lesson->course->lessons()
@@ -86,6 +91,7 @@ class VideoPlayer extends Component
             ->orderBy('order')
             ->first();
     }
+
     public function render()
     {
         $progress = 0;
@@ -94,6 +100,7 @@ class VideoPlayer extends Component
                 ->where('lesson_id', $this->lesson->id)
                 ->value('watch_seconds') ?? 0);
         }
+
         return view('livewire.video-player', ['progress' => $progress]);
     }
 }
